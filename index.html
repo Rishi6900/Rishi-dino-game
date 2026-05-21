@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Rishi's Multiverse Dino Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rishi's Ultimate Dino Game</title>
     <style>
         body {
             background-color: #121212;
@@ -9,36 +10,44 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             overflow: hidden;
-            transition: background 0.8s;
+            margin: 0;
+            padding: 0;
+            /* Mobile par bar-bar tap karne se text select na ho */
+            user-select: none;
+            -webkit-user-select: none;
         }
-        h1 { color: #00ff7f; margin-bottom: 5px; text-shadow: 0 0 10px #00ff7f; }
-        #modeText { font-size: 20px; color: #ffeb3b; font-weight: bold; }
+        h1 { font-size: 24px; color: #00ff7f; margin: 10px 0 5px 0; text-shadow: 0 0 10px #00ff7f; }
+        #modeText { font-size: 16px; color: #ffeb3b; font-weight: bold; margin-bottom: 5px; }
         
-        /* Game Screen Box */
+        /* Game Screen Box - Height kam ki taaki laptop me fit aaye */
         #gameArea {
-            width: 800px;
-            height: 400px;
+            width: 95%;
+            max-width: 800px;
+            height: 240px;
             border-bottom: 4px solid #fff;
-            margin: 20px auto;
+            margin: 10px auto;
             position: relative;
             overflow: hidden;
             background-color: #222;
             border-radius: 8px;
             box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.1);
-            transition: all 0.8s ease; 
+            transition: all 0.5s ease; 
+            /* Mobile tap highlight color band karne ke liye */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Hamara Dinosaur */
+        /* Hamara Dinosaur - Right side face kiya aur smooth banaya */
         #hero {
-            width: 40px;
-            height: 40px;
-            font-size: 35px; 
+            width: 44px;
+            height: 44px;
+            font-size: 38px; 
             position: absolute;
             bottom: 0;
             left: 50px;
-            line-height: 40px;
-            transition: transform 0.2s; 
-            transform-origin: bottom center;
+            line-height: 44px;
+            /* scaleX(-1) se Dino ka face Right Side ho gaya */
+            transform: scaleX(-1);
+            transition: transform 0.15s ease-out; 
             z-index: 5;
         }
 
@@ -53,28 +62,29 @@
             line-height: 40px;
         }
 
-        /* Jump Animation */
+        /* Asli Chrome Dino Jaisi Smooth Jump Animation */
         .jump-animation {
-            animation: jump 0.42s cubic-bezier(0.25, 0.1, 0.25, 1);
+            animation: jump 0.55s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         @keyframes jump {
             0% { bottom: 0; }
-            50% { bottom: 150px; } 
+            45% { bottom: 130px; } /* Perfect height jump */
+            55% { bottom: 130px; } 
             100% { bottom: 0; }
+        }
+
+        /* Dino takraate hi ghum ke gir jayega aur right side hi rahega */
+        .dead-animation {
+            transform: scaleX(-1) rotate(90deg) translateY(15px) !important;
         }
 
         /* Dushman Animation */
         .block-animation {
-            animation: blockMove 1.4s infinite linear;
+            animation: blockMove 1.5s infinite linear;
         }
         @keyframes blockMove {
-            0% { right: -50px; }
-            100% { right: 850px; } 
-        }
-
-        /* Dino takraate hi tilt ho kar gir jayega */
-        .dead-animation {
-            transform: rotate(90deg) translateY(10px) !important;
+            0% { left: 100%; }
+            100% { left: -50px; } 
         }
 
         /* Custom Cool Pop-up */
@@ -86,38 +96,38 @@
             transform: translate(-50%, -50%);
             background-color: rgba(20, 20, 20, 0.98);
             border: 3px solid #ff4757;
-            padding: 30px;
+            padding: 25px;
             border-radius: 15px;
             box-shadow: 0px 0px 30px #ff4757;
             z-index: 10;
-            width: 350px;
+            width: 300px;
         }
-        #popupTitle { color: #ff4757; font-size: 28px; margin: 0; }
-        #popupInsult { font-size: 18px; margin: 15px 0; color: #ffcccc; }
-        #popupScore { font-size: 22px; color: #00ffff; }
+        #popupTitle { color: #ff4757; font-size: 26px; margin: 0; }
+        #popupInsult { font-size: 16px; margin: 15px 0; color: #ffcccc; }
+        #popupScore { font-size: 20px; color: #00ffff; }
         
         #restartBtn {
             background-color: #ff4757;
             color: white;
             border: none;
             padding: 10px 20px;
-            font-size: 18px;
+            font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
             margin-top: 15px;
             font-weight: bold;
+            -webkit-tap-highlight-color: transparent;
         }
         #restartBtn:hover { background-color: #ff6b81; }
     </style>
 </head>
 <body>
 
-    <h1>🦖 Rishi's Multiverse Game 🌌</h1>
+    <h1>Rex Rishi's Multiverse 🌌</h1>
     <div id="modeText">🌍 KAAL (Era 1): Puraani Duniya</div>
-    <p>"Spacebar" ya Screen par click karke Jump karo!</p>
-    <h2 id="scoreText">Score: 0</h2>
+    <h2 id="scoreText" style="margin: 5px 0;">Score: 0</h2>
 
-    <div id="gameArea" onclick="jump()">
+    <div id="gameArea" ontouchstart="jump(event)" onclick="jump(event)">
         <div id="hero">🦖</div>
         <div id="obstacle" class="block-animation">🌵</div>
     </div>
@@ -126,7 +136,7 @@
         <h2 id="popupTitle">💥 GAME OVER 💥</h2>
         <p id="popupInsult">Beizzati message yahan aayega</p>
         <div id="popupScore">Score: 0</div>
-        <button id="restartBtn" onclick="restartGame()">GHAR JAA BHAI TU!! 😂</button>
+        <button id="restartBtn" ontouchstart="restartGame(event)" onclick="restartGame(event)">GHAR JAA BHAI TU!! 😂</button>
     </div>
 
     <script>
@@ -152,12 +162,14 @@
             "Lagta hai ungliyon me jaan nahi hai tere! 🤫"
         ];
 
-        function jump() {
+        // Event pass kiya taaki mobile aur laptop dono me click conflict na ho
+        function jump(e) {
+            if (e) e.preventDefault(); // Default double action roko
             if (hero.classList != "jump-animation" && isAlive) {
                 hero.classList.add("jump-animation");
                 setTimeout(function () {
                     hero.classList.remove("jump-animation");
-                }, 420);
+                }, 550);
             }
         }
 
@@ -167,45 +179,45 @@
             }
         });
 
-        // Takkar check loop
+        // Takkar check loop - Ekdam Perfect matching
         let checkDead = setInterval(function () {
             let heroRect = hero.getBoundingClientRect();
             let obstacleRect = obstacle.getBoundingClientRect();
 
+            // Thoda buffer minus kiya taaki emoji ke khali hisse par out na ho (Smooth hitboxes)
             if (
-                heroRect.right > obstacleRect.left &&
-                heroRect.left < obstacleRect.right &&
-                heroRect.bottom > obstacleRect.top
+                heroRect.right - 10 > obstacleRect.left &&
+                heroRect.left + 10 < obstacleRect.right &&
+                heroRect.bottom > obstacleRect.top + 5
             ) {
                 if (isAlive) { gameOver(); }
             }
         }, 10);
 
-        // Score Counter aur Background Changing Twist
+        // Score aur Era change loop
         setInterval(function() {
             if (isAlive) {
                 score++;
                 scoreText.innerText = "Score: " + score;
 
-                // 🌟 TWIST LEVEL 2: Cyberpunk Alien Mode (Score 40 par)
                 if (score >= 40 && score < 90 && currentLevel === 1) {
                     currentLevel = 2;
                     modeText.innerText = "👽 KAAL (Era 2): Alien Hamla!!";
                     modeText.style.color = "#00ffff";
-                    gameArea.style.backgroundColor = "#2c003e"; // Purple Neon style
+                    gameArea.style.backgroundColor = "#2c003e"; 
                     gameArea.style.borderBottomColor = "#00ffff";
-                    obstacle.innerText = "🛸"; // Cactus ban gaya UFO!
-                    obstacle.style.animationDuration = "1.1s"; // Speed tez!
+                    obstacle.innerText = "UFO"; // Fallback text ya emoji
+                    obstacle.innerText = "🛸"; 
+                    obstacle.style.animationDuration = "1.2s"; 
                 } 
-                // 🌟 TWIST LEVEL 3: Hell/Danger Mode (Score 90 par)
                 else if (score >= 90 && currentLevel === 2) {
                     currentLevel = 3;
                     modeText.innerText = "🔥 KAAL (Era 3): NARAK MODE!!";
                     modeText.style.color = "#ff4757";
-                    gameArea.style.backgroundColor = "#4a0000"; // Blood Red
+                    gameArea.style.backgroundColor = "#4a0000"; 
                     gameArea.style.borderBottomColor = "#ff4757";
-                    obstacle.innerText = "👻"; // UFO ban gaya Bhoot!
-                    obstacle.style.animationDuration = "0.8s"; // Bahut fast!
+                    obstacle.innerText = "👻"; 
+                    obstacle.style.animationDuration = "0.9s"; 
                 }
             }
         }, 100);
@@ -214,7 +226,7 @@
             isAlive = false;
             let currentLeft = window.getComputedStyle(obstacle).getPropertyValue("left");
             obstacle.classList.remove("block-animation");
-            obstacle.style.left = currentLeft;
+            obstacle.style.left = currentLeft + "px";
             
             hero.classList.add("dead-animation");
             
@@ -224,7 +236,8 @@
             customPopup.style.display = "block";
         }
 
-        function restartGame() {
+        function restartGame(e) {
+            if (e) e.preventDefault();
             score = 0;
             isAlive = true;
             currentLevel = 1;
@@ -237,11 +250,10 @@
             gameArea.style.borderBottomColor = "#fff";
             
             hero.classList.remove("dead-animation");
-            obstacle.innerText = "🌵"; // Wapas cactus
-            obstacle.style.animationDuration = "1.4s"; // normal speed
+            obstacle.innerText = "🌵"; 
+            obstacle.style.animationDuration = "1.5s"; 
             
             obstacle.style.left = ""; 
-            obstacle.style.right = "-50px";
             obstacle.classList.add("block-animation");
             customPopup.style.display = "none"; 
         }
